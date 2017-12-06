@@ -34,7 +34,6 @@ public class TopStoriesFragment extends Fragment implements TopStoriesLoadedList
     ProgressBar progressBar;
 
     List<HackerNewsModel> news = new ArrayList<>();
-    ProgressDialog dialog;
 
 
     public TopStoriesFragment() {
@@ -55,19 +54,20 @@ public class TopStoriesFragment extends Fragment implements TopStoriesLoadedList
 
         refreshLayout = view.findViewById(R.id.refresh_top_stories_layout);
         refreshLayout.setOnRefreshListener(this);
-        dialog = new ProgressDialog(getActivity());
-        dialog.setMessage("Fetching news...");
 
         adapter = new RootRecyclerAdapter();
 
         recyclerView.setAdapter(adapter);
-        dialog.show();
 
         news = MyApplication.getWritableDatabase().getNews(DBNews.TOP_STORIES);
         if (news.isEmpty())
             new TaskLoadTopStories(this).execute();
         adapter.setMovies(news);
-        dialog.hide();
+
+        if (news.size() > 0 && progressBar.getVisibility() == View.VISIBLE) {
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
 
         return view;
     }

@@ -64,6 +64,11 @@ public class NewStoriesFragment extends Fragment implements NewStoriesLoadedList
             new TaskLoadNewStories(this).execute();
         adapter.setMovies(news);
 
+        if (news.size() > 0 && progressBar.getVisibility() == View.VISIBLE) {
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
         return view;
     }
 
