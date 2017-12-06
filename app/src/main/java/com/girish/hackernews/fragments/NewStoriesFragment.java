@@ -1,7 +1,6 @@
 package com.girish.hackernews.fragments;
 
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -10,13 +9,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.girish.hackernews.MyApplication;
 import com.girish.hackernews.R;
 import com.girish.hackernews.adapter.RootRecyclerAdapter;
 import com.girish.hackernews.callbacks.NewStoriesLoadedListener;
 import com.girish.hackernews.database.DBNews;
+import com.girish.hackernews.extras.CheckNetworkConnection;
 import com.girish.hackernews.extras.HackerNewsModel;
 import com.girish.hackernews.task.TaskLoadNewStories;
 
@@ -33,7 +36,10 @@ public class NewStoriesFragment extends Fragment implements NewStoriesLoadedList
     RootRecyclerAdapter adapter;
     ProgressBar progressBar;
 
+    TextView errorText;
+
     List<HackerNewsModel> news = new ArrayList<>();
+    boolean isConnected = false;
 
 
     public NewStoriesFragment() {
@@ -46,6 +52,10 @@ public class NewStoriesFragment extends Fragment implements NewStoriesLoadedList
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_new_stories, container, false);
+
+        isConnected = CheckNetworkConnection.isInternetAvailable(getActivity());
+
+        errorText = view.findViewById(R.id.new_stories_error_text);
 
         recyclerView = view.findViewById(R.id.new_stories_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -60,21 +70,41 @@ public class NewStoriesFragment extends Fragment implements NewStoriesLoadedList
         recyclerView.setAdapter(adapter);
 
         news = MyApplication.getWritableDatabase().getNews(DBNews.NEW_STORIES);
-        if (news.isEmpty())
+        if (news.isEmpty() && isConnected)
             new TaskLoadNewStories(this).execute();
         adapter.setMovies(news);
 
         if (news.size() > 0 && progressBar.getVisibility() == View.VISIBLE) {
             progressBar.setVisibility(View.GONE);
+            errorText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+
+        checkConnection();
 
         return view;
     }
 
+    private void checkConnection() {
+        if (!isConnected && news.size() == 0) {
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            errorText.setVisibility(View.VISIBLE);
+            errorText.setText(R.string.network_refresh_message);
+
+        } else if (!isConnected)
+            Toast.makeText(getActivity(), R.string.network_error_message, Toast.LENGTH_LONG).show();
+
+        if (refreshLayout.isRefreshing())
+            refreshLayout.setRefreshing(false);
+
+    }
+
     @Override
     public void onNewStoriesLoaded(List<HackerNewsModel> news) {
-        adapter.setMovies(news);
+        if (news.size() > 0) {
+            adapter.setMovies(news);
+        }
         try {
             if (progressBar.getVisibility() == View.VISIBLE) {
                 progressBar.setVisibility(View.GONE);
@@ -90,6 +120,10 @@ public class NewStoriesFragment extends Fragment implements NewStoriesLoadedList
 
     @Override
     public void onRefresh() {
-        new TaskLoadNewStories(this).execute();
+        isConnected = CheckNetworkConnection.isInternetAvailable(getActivity());
+        if (isConnected)
+            new TaskLoadNewStories(this).execute();
+        else
+            checkConnection();
     }
 }

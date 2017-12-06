@@ -28,7 +28,13 @@ public class NewsUtils {
             JSONObject object = Requester.requestNews(requestQueue, url);
             response.add(Parser.parseNewsJson(object));
         }
-        MyApplication.getWritableDatabase().insertNews(DBNews.BEST_STORIES, response, true);
+        if (response.size() > 0) {
+            try {
+                MyApplication.getWritableDatabase().insertNews(DBNews.BEST_STORIES, response, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return response;
     }
 
@@ -41,7 +47,13 @@ public class NewsUtils {
             JSONObject object = Requester.requestNews(requestQueue, url);
             response.add(Parser.parseNewsJson(object));
         }
-        MyApplication.getWritableDatabase().insertNews(DBNews.NEW_STORIES, response, true);
+        if (response.size() > 0) {
+            try {
+                MyApplication.getWritableDatabase().insertNews(DBNews.NEW_STORIES, response, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return response;
     }
 
@@ -54,7 +66,13 @@ public class NewsUtils {
             JSONObject object = Requester.requestNews(requestQueue, url);
             response.add(Parser.parseNewsJson(object));
         }
-        MyApplication.getWritableDatabase().insertNews(DBNews.TOP_STORIES, response, true);
+        if (response.size() > 0) {
+            try {
+                MyApplication.getWritableDatabase().insertNews(DBNews.TOP_STORIES, response, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return response;
     }
 

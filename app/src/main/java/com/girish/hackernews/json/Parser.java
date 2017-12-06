@@ -21,14 +21,16 @@ public class Parser {
 
         int size = 20;
 
-        if (list.length() < 20)
-            size = list.length();
+        if (list != null) {
+            if (list.length() < 20)
+                size = list.length();
 
-        for (int i = 0; i < size; i++) {
-            try {
-                newsId.add(list.getLong(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
+            for (int i = 0; i < size; i++) {
+                try {
+                    newsId.add(list.getLong(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -36,29 +38,32 @@ public class Parser {
     }
 
     public static HackerNewsModel parseNewsJson(JSONObject obj) {
-        HackerNewsModel model = new HackerNewsModel();
+        HackerNewsModel model = null;
         String title = "";
         String by = "";
         String url = "";
         long time = 0, id = 0;
 
         try {
-            if (Util.contains(obj, Keys.KEY_ID))
-                id = obj.getLong(Keys.KEY_ID);
-            if (Util.contains(obj, Keys.KEY_TIME))
-                time = obj.getLong(Keys.KEY_TIME);
-            if (Util.contains(obj, Keys.KEY_BY))
-                by = obj.getString(Keys.KEY_BY);
-            if (Util.contains(obj, Keys.KEY_TITLE))
-                title = obj.getString(Keys.KEY_TITLE);
-            if (Util.contains(obj, Keys.KEY_URL))
-                url = obj.getString(Keys.KEY_URL);
+            if (obj != null) {
+                model = new HackerNewsModel();
+                if (Util.contains(obj, Keys.KEY_ID))
+                    id = obj.getLong(Keys.KEY_ID);
+                if (Util.contains(obj, Keys.KEY_TIME))
+                    time = obj.getLong(Keys.KEY_TIME);
+                if (Util.contains(obj, Keys.KEY_BY))
+                    by = obj.getString(Keys.KEY_BY);
+                if (Util.contains(obj, Keys.KEY_TITLE))
+                    title = obj.getString(Keys.KEY_TITLE);
+                if (Util.contains(obj, Keys.KEY_URL))
+                    url = obj.getString(Keys.KEY_URL);
 
-            model.setBy(by);
-            model.setTime(time);
-            model.setTitle(title);
-            model.setId(id);
-            model.setUrl(url);
+                model.setBy(by);
+                model.setTime(time);
+                model.setTitle(title);
+                model.setId(id);
+                model.setUrl(url);
+            }
 
 
         } catch (Exception e) {

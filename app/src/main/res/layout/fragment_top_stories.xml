@@ -21,7 +21,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            android:visibility="gone"/>
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/top_stories_error_text"
+            style="@style/Base.TextAppearance.AppCompat.Body1"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
