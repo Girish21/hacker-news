@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">HackerNews</string>
+    <string name="top_stories">Top Stories</string>
+    <string name="new_stories">New Stories</string>
+    <string name="best_stories">Best Stories</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
