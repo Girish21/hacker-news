@@ -1,14 +1,28 @@
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refresh_top_stories_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.girish.hackernews.fragments.TopStoriesFragment"
-    android:id="@+id/refresh_top_stories_layout">
+    tools:context="com.girish.hackernews.fragments.TopStoriesFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/top_stories_recycler_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/top_stories_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/top_stories_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

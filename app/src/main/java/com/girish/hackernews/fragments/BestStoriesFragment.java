@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.girish.hackernews.MyApplication;
 import com.girish.hackernews.R;
@@ -30,9 +31,9 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
     RecyclerView recyclerView;
     RootRecyclerAdapter adapter;
     SwipeRefreshLayout refreshLayout;
+    ProgressBar progressBar;
 
     List<HackerNewsModel> news = new ArrayList<>();
-    ProgressDialog dialog;
 
 
     public BestStoriesFragment() {
@@ -49,22 +50,19 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
         recyclerView = view.findViewById(R.id.best_stories_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        progressBar = view.findViewById(R.id.best_stories_progress);
+
         refreshLayout = view.findViewById(R.id.refresh_best_stories_layout);
         refreshLayout.setOnRefreshListener(this);
-
-        dialog = new ProgressDialog(getActivity());
-        dialog.setMessage("Fetching news...");
 
         adapter = new RootRecyclerAdapter();
 
         recyclerView.setAdapter(adapter);
 
-        dialog.show();
         news = MyApplication.getWritableDatabase().getNews(DBNews.BEST_STORIES);
         if (news.isEmpty())
             new TaskLoadBestStories(this).execute();
         adapter.setMovies(news);
-        dialog.hide();
 
         return view;
     }
@@ -73,8 +71,10 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
     public void onBestStoriesLoaded(List<HackerNewsModel> news) {
         adapter.setMovies(news);
         try {
-            if (dialog.isShowing())
-                dialog.hide();
+            if (progressBar.getVisibility() == View.VISIBLE) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
 
             if (refreshLayout.isRefreshing())
                 refreshLayout.setRefreshing(false);

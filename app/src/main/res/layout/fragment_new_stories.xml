@@ -5,10 +5,24 @@
     tools:context="com.girish.hackernews.fragments.NewStoriesFragment"
     android:id="@+id/refresh_new_stories_layout">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/new_stories_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/new_stories_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:visibility="gone"/>
+
+    </RelativeLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
