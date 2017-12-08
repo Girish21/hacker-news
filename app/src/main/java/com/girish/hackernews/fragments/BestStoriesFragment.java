@@ -1,23 +1,29 @@
 package com.girish.hackernews.fragments;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.girish.hackernews.MyApplication;
 import com.girish.hackernews.R;
+import com.girish.hackernews.activity.ViewNews;
 import com.girish.hackernews.adapter.RootRecyclerAdapter;
 import com.girish.hackernews.callbacks.BestStoriesLoadedListener;
+import com.girish.hackernews.callbacks.ClickListener;
 import com.girish.hackernews.database.DBNews;
 import com.girish.hackernews.extras.CheckNetworkConnection;
 import com.girish.hackernews.extras.HackerNewsModel;
@@ -80,6 +86,21 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
             recyclerView.setVisibility(View.VISIBLE);
         }
 
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+//                Toast.makeText(getActivity(), "Clicked: " + String.valueOf(position), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), ViewNews.class);
+                intent.putExtra("URL", news.get(position).getUrl());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
         checkConnection();
 
         return view;
@@ -126,5 +147,47 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
             new TaskLoadBestStories(this).execute();
         } else
             checkConnection();
+    }
+
+    class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+        ClickListener listener;
+        GestureDetector gestureDetector;
+
+        RecyclerTouchListener(Context context, RecyclerView recyclerView, ClickListener listener) {
+            this.listener = listener;
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+//                    Log.i("Touch", "SingleTapTouchEvent " + e.toString());
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    super.onLongPress(e);
+//                    Log.i("Touch", "LongPressTouchEvent " + e.toString());
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+//            Log.i("Touch", "InterceptTouchEvent " + gestureDetector.onTouchEvent(e) + " " + e.toString());
+            View view = rv.findChildViewUnder(e.getX(), e.getY());
+            if (listener != null && view != null && gestureDetector.onTouchEvent(e))
+                listener.onClick(view, rv.getChildLayoutPosition(view));
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+//            Log.i("Touch", "TouchEvent " + e.toString());
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 }

@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 
 import com.girish.hackernews.R;
 import com.girish.hackernews.fragments.BestStoriesFragment;
@@ -22,14 +23,18 @@ import com.girish.hackernews.service.ServiceBestStories;
 import com.girish.hackernews.service.ServiceNewStories;
 import com.girish.hackernews.service.ServiceTopStories;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private JobScheduler scheduler;
 
-    private static final long POLL_FREQUENCY = 1800000;
+    //    private static final long POLL_FREQUENCY = 1800000;
+    private static final long POLL_FREQUENCY = 300000;
+
 
     private static final int TOP_STORIES_JOB_ID = 100;
     private static final int NEW_STORIES_JOB_ID = 101;
@@ -73,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 buildJob();
             }
-        }, 30000);
+        }, 20000);
     }
 
     private void buildJob() {
@@ -85,18 +90,40 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(this, ServiceBestStories.class));
 
         builderTopStories.setPeriodic(POLL_FREQUENCY)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true);
         builderNewStories.setPeriodic(POLL_FREQUENCY)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true);
         builderBestStories.setPeriodic(POLL_FREQUENCY)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true);
 
         scheduler.schedule(builderTopStories.build());
         scheduler.schedule(builderNewStories.build());
         scheduler.schedule(builderBestStories.build());
+
+        clearCache(this);
+    }
+
+    private void clearCache(Context context) {
+        clearCacheFolder(context.getCacheDir());
+    }
+
+    private void clearCacheFolder(File cacheDir) {
+        if (cacheDir != null && cacheDir.isDirectory()) {
+            long currentTime = new Date().getTime();
+            try {
+                for (File child : cacheDir.listFiles()) {
+                    if (child.isDirectory())
+                        clearCacheFolder(child);
+                    if (child.lastModified() < currentTime - DateUtils.DAY_IN_MILLIS)
+                        child.delete();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class RootPagerAdapter extends FragmentStatePagerAdapter {

@@ -41,7 +41,7 @@ public class Requester {
         requestQueue.add(request);
 
         try {
-            response = requestFuture.get(1800000, TimeUnit.MILLISECONDS);
+            response = requestFuture.get(30000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             if (e.getCause() instanceof VolleyError) {
                 VolleyError error = (VolleyError) e.getCause();
@@ -79,7 +79,7 @@ public class Requester {
         requestQueue.add(request);
 
         try {
-            response = requestFuture.get(1800000, TimeUnit.MILLISECONDS);
+            response = requestFuture.get(30000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             if (e.getCause() instanceof VolleyError) {
                 VolleyError error = (VolleyError) e.getCause();

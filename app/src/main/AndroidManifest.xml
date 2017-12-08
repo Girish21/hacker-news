@@ -22,12 +22,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.ServiceBestStories"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".service.ServiceTopStories"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".service.ServiceNewStories"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <service
+            android:name=".service.ServiceBestStories"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".service.ServiceTopStories"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".service.ServiceNewStories"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <activity android:name=".activity.ViewNews">
+            <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+                android:value="true" />
+        </activity>
     </application>
 
 </manifest>

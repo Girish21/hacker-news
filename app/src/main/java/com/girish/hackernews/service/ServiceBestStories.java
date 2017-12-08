@@ -2,6 +2,7 @@ package com.girish.hackernews.service;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.util.Log;
 
 import com.girish.hackernews.callbacks.BestStoriesLoadedListener;
 import com.girish.hackernews.extras.HackerNewsModel;
@@ -20,6 +21,7 @@ public class ServiceBestStories extends JobService implements BestStoriesLoadedL
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
         parameters = jobParameters;
+        Log.i("Job", "Top");
         new TaskLoadBestStories(this).execute();
         return true;
     }
