@@ -46,6 +46,7 @@ public class ViewNews extends AppCompatActivity implements SwipeRefreshLayout.On
         refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_24dp);
 
         Intent intent = getIntent();
 
