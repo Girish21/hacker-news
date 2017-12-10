@@ -7,12 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.girish.hackernews.R;
@@ -21,8 +23,9 @@ public class ViewNews extends AppCompatActivity implements SwipeRefreshLayout.On
 
     WebView webView;
     SwipeRefreshLayout refreshLayout;
+    ProgressBar progressBar;
 
-    String url;
+    String url, title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +39,20 @@ public class ViewNews extends AppCompatActivity implements SwipeRefreshLayout.On
         Toolbar toolbar = findViewById(R.id.news_view_toolbar);
         setSupportActionBar(toolbar);
 
+        progressBar = findViewById(R.id.news_view_progress);
+
         refreshLayout = findViewById(R.id.news_view_refresh);
         refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
-        url = intent.getStringExtra("URL");
+        url = intent.getStringExtra("com.girish.hackernews.URL");
+        title = intent.getStringExtra("com.girish.hackernews.title");
+
+        setTitle(title);
 
         webView = findViewById(R.id.news_web_view);
 
@@ -56,14 +65,22 @@ public class ViewNews extends AppCompatActivity implements SwipeRefreshLayout.On
 
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                activity.setProgress(progress * 1000);
+                if (progress < 100) {
+                    progressBar.setProgress(progress);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                }
             }
+
         });
 
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
+                progressBar.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
                 Toast.makeText(activity, "Some error while fetching data, please try again later", Toast.LENGTH_SHORT).show();
             }
         });

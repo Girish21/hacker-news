@@ -1,6 +1,7 @@
 package com.girish.hackernews.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +17,10 @@ import android.widget.Toast;
 
 import com.girish.hackernews.MyApplication;
 import com.girish.hackernews.R;
+import com.girish.hackernews.activity.ViewNews;
+import com.girish.hackernews.adapter.RecyclerTouchListener;
 import com.girish.hackernews.adapter.RootRecyclerAdapter;
+import com.girish.hackernews.callbacks.ClickListener;
 import com.girish.hackernews.callbacks.TopStoriesLoadedListener;
 import com.girish.hackernews.database.DBNews;
 import com.girish.hackernews.extras.CheckNetworkConnection;
@@ -64,6 +68,7 @@ public class TopStoriesFragment extends Fragment implements TopStoriesLoadedList
 
         refreshLayout = view.findViewById(R.id.refresh_top_stories_layout);
         refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
 
         adapter = new RootRecyclerAdapter();
 
@@ -80,9 +85,30 @@ public class TopStoriesFragment extends Fragment implements TopStoriesLoadedList
             recyclerView.setVisibility(View.VISIBLE);
         }
 
+        initializeClickListener();
+
         checkConnection();
 
         return view;
+    }
+
+    private void initializeClickListener() {
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+//                Toast.makeText(getActivity(), "Clicked: " + String.valueOf(position), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), ViewNews.class);
+                intent.putExtra("com.girish.hackernews.URL", news.get(position).getUrl());
+                intent.putExtra("com.girish.hackernews.title", news.get(position).getTitle());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
     }
 
     private void checkConnection() {
@@ -104,6 +130,7 @@ public class TopStoriesFragment extends Fragment implements TopStoriesLoadedList
     public void onTopStoriesLoaded(List<HackerNewsModel> news) {
         if (news.size() > 0) {
             adapter.setMovies(news);
+            initializeClickListener();
         }
         try {
             if (progressBar.getVisibility() == View.VISIBLE) {

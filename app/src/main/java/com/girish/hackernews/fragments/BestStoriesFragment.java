@@ -1,17 +1,13 @@
 package com.girish.hackernews.fragments;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -21,6 +17,7 @@ import android.widget.Toast;
 import com.girish.hackernews.MyApplication;
 import com.girish.hackernews.R;
 import com.girish.hackernews.activity.ViewNews;
+import com.girish.hackernews.adapter.RecyclerTouchListener;
 import com.girish.hackernews.adapter.RootRecyclerAdapter;
 import com.girish.hackernews.callbacks.BestStoriesLoadedListener;
 import com.girish.hackernews.callbacks.ClickListener;
@@ -70,6 +67,7 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
 
         refreshLayout = view.findViewById(R.id.refresh_best_stories_layout);
         refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
 
         adapter = new RootRecyclerAdapter();
 
@@ -86,12 +84,22 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
             recyclerView.setVisibility(View.VISIBLE);
         }
 
+        initializeClickListener();
+        checkConnection();
+
+        return view;
+    }
+
+    private void initializeClickListener() {
+
+
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
 //                Toast.makeText(getActivity(), "Clicked: " + String.valueOf(position), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), ViewNews.class);
-                intent.putExtra("URL", news.get(position).getUrl());
+                intent.putExtra("com.girish.hackernews.URL", news.get(position).getUrl());
+                intent.putExtra("com.girish.hackernews.title", news.get(position).getTitle());
                 startActivity(intent);
             }
 
@@ -100,10 +108,6 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
 
             }
         }));
-
-        checkConnection();
-
-        return view;
     }
 
     private void checkConnection() {
@@ -126,6 +130,7 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
     public void onBestStoriesLoaded(List<HackerNewsModel> news) {
         if (news.size() > 0) {
             adapter.setMovies(news);
+            initializeClickListener();
         }
         try {
             if (progressBar.getVisibility() == View.VISIBLE) {
@@ -149,45 +154,4 @@ public class BestStoriesFragment extends Fragment implements BestStoriesLoadedLi
             checkConnection();
     }
 
-    class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
-
-        ClickListener listener;
-        GestureDetector gestureDetector;
-
-        RecyclerTouchListener(Context context, RecyclerView recyclerView, ClickListener listener) {
-            this.listener = listener;
-            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-//                    Log.i("Touch", "SingleTapTouchEvent " + e.toString());
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    super.onLongPress(e);
-//                    Log.i("Touch", "LongPressTouchEvent " + e.toString());
-                }
-            });
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-//            Log.i("Touch", "InterceptTouchEvent " + gestureDetector.onTouchEvent(e) + " " + e.toString());
-            View view = rv.findChildViewUnder(e.getX(), e.getY());
-            if (listener != null && view != null && gestureDetector.onTouchEvent(e))
-                listener.onClick(view, rv.getChildLayoutPosition(view));
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-//            Log.i("Touch", "TouchEvent " + e.toString());
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
-    }
 }

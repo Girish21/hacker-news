@@ -8,5 +8,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh">refresh</string>
     <string name="network_error_message">Oops! There\'s no Internet Connection. Please switch on your Mobile data or Wifi.</string>
-    <string name="network_refresh_message">Pull down to refresh</string>
+    <string name="network_refresh_message">No network connection. Please switch on your Mobile data or Wifi.
+        And pull down to refresh</string>
 </resources>
